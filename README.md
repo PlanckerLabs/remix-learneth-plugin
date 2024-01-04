@@ -1,4 +1,4 @@
-# Getting Started with Create React App
+# Remix LearnEth Plugin
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -14,11 +14,6 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
-### `yarn test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
 ### `yarn build`
 
 Builds the app for production to the `build` folder.\
@@ -29,18 +24,115 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `yarn eject`
+## Loading the plugin in remix
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+When testing with localhost you should use the HTTP version of either REMIX or REMIX ALPHA. Click on the plugin manager icon and
+add the plugin 'Connect to a local plugin'. Your plugin when served with NG SERVE will be at http://localhost:3000/.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Setting up the REMIX IDE for working with the plugin
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+The plugin only works when a compiler environment is loaded as well, for example on the home screen of the IDE you select 'Solidity' or 'Vyper'. Without this the plugin
+cannot compile and test files in the workshops.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## Setting up your Github workshops repo
 
-## Learn More
+You can create your own workshops that can be imported in the plugin.
+When importing a github repo the plugin will look for a directory structure describing the workshops.
+For example: https://github.com/ethereum/remix-workshops
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Root directories
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Root directories are individual workshops, the name used will be the name of the workshop unless you override this with the name property in the config.yml.
+
+### README.md
+
+The readme in each directry contains an explanation of what the workshop is about. If an additional summary property is provided in the config.yml that will be used in the overview section of the plugin.
+
+### config.yml
+
+This config file contains meta data describing some properties of your workshop, for example
+
+```
+---
+id: someid
+name: my workshop name
+summary: something about this workshop
+level: 4
+tags:
+  - solidity
+  - beginner
+```
+
+Level: a level of difficulty indicator ( 1 - 5 )
+
+Tags: an array of tags
+
+id: this is used by the system to let REMIX call startTutorial(repo,branch,id). See below for more instructions.
+
+### Steps
+
+Each workshop contains what we call steps.
+Each step is a directory containing:
+
+- a readme describing the step, what to do.
+- sol files:
+  - these can be sol files and test sol files. The test files should be name yoursolname_test.sol
+  - ANSWER files: these are named yoursolname_answer.sol and can be used to show the solution or the correct answer. The plugin will load the
+    file in the IDE when a user clicks on 'Show Answer'
+- js files
+- vyper files
+
+## Functions to call the plugin from the IDE
+
+### Add a repository:
+
+```
+addRepository(repoName, branch)
+```
+
+### Start a tutorial
+
+```
+startTutorial(repoName,branch,id)
+```
+
+You don't need to add a seperate addRepository before calling startTutorial, this call will also add the repo.
+
+_Parameters_
+
+id: this can be two things:
+
+- type of number, it specifies the n-th tutorial in the list
+- type of string, this refers to the ID parameter in the config.yml file in the tutorial
+  for example:
+
+```
+---
+id: basics
+name: 1 Basics of Solidity
+summary: Some basic functions explained
+level: 4
+tags:
+    - solidity
+```
+
+### How to call these functions in the REMIX IDE
+
+```
+(function ()  {
+try {
+    // You don't need to add a seperate addRepository before calling startTutorial, this is just an example
+    remix.call('LearnEth', 'addRepository', "ethereum/remix-workshops", "master")
+    remix.call('LearnEth', 'startTutorial', "ethereum/remix-workshops", "master", "basics")
+    remix.call('LearnEth', 'startTutorial', "ethereum/remix-workshops", "master", 2)
+} catch (e) {
+   console.log(e.message)
+}
+})()
+```
+
+Then call this in the REMIX console
+
+```
+remix.exeCurrent()
+```
