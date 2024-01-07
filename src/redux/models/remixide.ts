@@ -11,10 +11,10 @@ function getFilePath(file: string): string {
 const Model: ModelType = {
   namespace: 'remixide',
   state: {
-    status: 'connecting',
     errors: [],
     success: false,
     errorLoadingFile: false,
+    theme: '',
   },
   reducers: {
     save(state, { payload }) {
@@ -34,13 +34,6 @@ const Model: ModelType = {
 
       yield remixClient.onload();
 
-      yield put({
-        type: 'remixide/save',
-        payload: {
-          status: 'connected',
-        },
-      });
-
       toast.dismiss();
 
       yield put({
@@ -53,10 +46,6 @@ const Model: ModelType = {
       yield router.navigate('/home');
     },
     *displayFile({ payload: step }, { select, put }) {
-      const { detail, selectedId } = yield select((state) => state.workshop);
-
-      const workshop = detail[selectedId];
-      console.log('loading ', step, workshop);
       let content = '';
       let path = '';
       if (step.solidity?.file) {
@@ -76,6 +65,19 @@ const Model: ModelType = {
         return;
       }
 
+      toast.info(`loading ${path} into IDE`);
+      yield put({
+        type: 'loading/save',
+        payload: {
+          screen: true,
+        },
+      });
+
+      const { detail, selectedId } = yield select((state) => state.workshop);
+
+      const workshop = detail[selectedId];
+      console.log('loading ', step, workshop);
+
       path = `.learneth/${workshop.name}/${step.name}/${path}`;
       try {
         const isExist = yield remixClient.call(
@@ -91,14 +93,30 @@ const Model: ModelType = {
           type: 'remixide/save',
           payload: { errorLoadingFile: false },
         });
+        toast.dismiss();
       } catch (error) {
+        toast.dismiss();
+        toast.error('File could not be loaded. Please try again.');
         yield put({
           type: 'remixide/save',
           payload: { errorLoadingFile: true },
         });
       }
+      yield put({
+        type: 'loading/save',
+        payload: {
+          screen: false,
+        },
+      });
     },
     *testStep({ payload: step }, { select, put }) {
+      yield put({
+        type: 'loading/save',
+        payload: {
+          screen: true,
+        },
+      });
+
       try {
         yield put({
           type: 'remixide/save',
@@ -160,8 +178,23 @@ const Model: ModelType = {
           payload: { errors: [String(err)] },
         });
       }
+      yield put({
+        type: 'loading/save',
+        payload: {
+          screen: false,
+        },
+      });
     },
     *showAnswer({ payload: step }, { select, put }) {
+      yield put({
+        type: 'loading/save',
+        payload: {
+          screen: true,
+        },
+      });
+
+      toast.info('loading answer into IDE');
+
       try {
         console.log('loading ', step);
         const content = step.answer.content;
@@ -179,6 +212,14 @@ const Model: ModelType = {
           payload: { errors: [String(err)] },
         });
       }
+
+      toast.dismiss();
+      yield put({
+        type: 'loading/save',
+        payload: {
+          screen: false,
+        },
+      });
     },
     *startTutorial({ payload: { name, branch, dataId } }, { put, select }) {
       if (['/list', '/detail'].includes(location.pathname)) {

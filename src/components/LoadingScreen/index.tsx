@@ -4,9 +4,9 @@ import './index.css';
 import { useAppSelector } from '../../redux/hooks';
 
 const LoadingScreen: React.FC = () => {
-  const status = useAppSelector((state) => state.remixide.status);
+  const loading = useAppSelector((state) => state.loading.screen);
 
-  return status === 'connecting' ? (
+  return loading ? (
     <div className="spinnersOverlay">
       <BounceLoader color="#a7b0ae" size={100} className="spinnersLoading" />
     </div>

@@ -35,7 +35,8 @@ function RepoImporter({ list, selectedRepo }: any): JSX.Element {
     dispatch({ type: 'workshop/loadRepo', payload: repo });
   };
 
-  const importRepo = () => {
+  const importRepo = (event: { preventDefault: () => void }) => {
+    event.preventDefault();
     dispatch({ type: 'workshop/loadRepo', payload: { name, branch } });
   };
 

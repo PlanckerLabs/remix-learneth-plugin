@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import groupBy from 'lodash/groupBy';
 import pick from 'lodash/pick';
 import { type ModelType } from '../store';
@@ -40,6 +41,15 @@ const Model: ModelType = {
       }
     },
     *loadRepo({ payload }, { put, select }) {
+      toast.info(`loading ${payload.name}/${payload.branch}`);
+
+      yield put({
+        type: 'loading/save',
+        payload: {
+          screen: true,
+        },
+      });
+
       const { list, detail } = yield select((state) => state.workshop);
 
       const url = `${apiUrl}/clone/${encodeURIComponent(payload.name)}/${
@@ -125,6 +135,14 @@ const Model: ModelType = {
         payload: workshopState,
       });
       localStorage.setItem('workshop.state', JSON.stringify(workshopState));
+
+      toast.dismiss();
+      yield put({
+        type: 'loading/save',
+        payload: {
+          screen: false,
+        },
+      });
     },
     *resetAll(_, { put }) {
       yield put({

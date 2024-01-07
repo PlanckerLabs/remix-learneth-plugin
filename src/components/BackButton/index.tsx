@@ -8,11 +8,13 @@ import {
   faChevronLeft,
   faChevronRight,
 } from '@fortawesome/free-solid-svg-icons';
+import { useAppSelector } from '../../redux/hooks';
 import './index.scss';
 
 function BackButton({ entity }: any) {
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
+  const theme = useAppSelector((state) => state.remixide.theme);
   const isDetailPage = location.pathname === '/detail';
   const queryParams = new URLSearchParams(location.search);
   const stepId = Number(queryParams.get('stepId'));
@@ -64,6 +66,7 @@ function BackButton({ entity }: any) {
         </form>
       )}
       <Modal
+        data-bs-theme={theme}
         show={show}
         onHide={() => {
           setShow(false);
