@@ -167,7 +167,11 @@ const Model: ModelType = {
           } else {
             yield put({
               type: 'remixide/save',
-              payload: { errors: result.errors },
+              payload: {
+                errors: result.errors.map(
+                  (error: { message: any }) => error.message,
+                ),
+              },
             });
           }
         }
@@ -220,27 +224,6 @@ const Model: ModelType = {
           screen: false,
         },
       });
-    },
-    *startTutorial({ payload: { name, branch, dataId } }, { put, select }) {
-      if (['/list', '/detail'].includes(location.pathname)) {
-        yield router.navigate('/home');
-      }
-
-      yield put({
-        type: 'workshop/loadRepo',
-        payload: { name, branch },
-      });
-
-      if (dataId) {
-        const { detail, selectedId } = yield select((state) => state.workshop);
-        const { ids, entities } = detail[selectedId];
-        for (let i = 0; i < ids.length; i++) {
-          if (entities[ids[i]].metadata.data.id === dataId) {
-            yield router.navigate(`/list?id=${ids[i]}`);
-            break;
-          }
-        }
-      }
     },
     *testSolidityCompiler(_, { put, select }) {
       try {

@@ -1,6 +1,7 @@
 import { PluginClient } from '@remixproject/plugin';
 import { createClient } from '@remixproject/plugin-webview';
 import { store } from './redux/store';
+import { router } from './App';
 
 class RemixClient extends PluginClient {
   constructor() {
@@ -8,22 +9,24 @@ class RemixClient extends PluginClient {
     createClient(this);
   }
 
-  startTutorial(name: any, branch: any, dataId: any): void {
-    console.log('start tutorial', name, branch, dataId);
+  startTutorial(name: any, branch: any, id: any): void {
+    console.log('start tutorial', name, branch, id);
+    void router.navigate('/home');
     store.dispatch({
-      type: 'remixide/startTutorial',
+      type: 'workshop/loadRepo',
       payload: {
         name,
         branch,
-        dataId,
+        id,
       },
     });
   }
 
   addRepository(name: any, branch: any) {
     console.log('add repo', name, branch);
+    void router.navigate('/home');
     store.dispatch({
-      type: 'remixide/startTutorial',
+      type: 'workshop/loadRepo',
       payload: {
         name,
         branch,

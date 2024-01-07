@@ -30,7 +30,14 @@ function StepDetailPage() {
       type: 'remixide/save',
       payload: { errors: [], success: false },
     });
+    window.scrollTo(0, 0);
   }, [step]);
+
+  useEffect(() => {
+    if (errors.length > 0) {
+      window.scrollTo(0, document.documentElement.scrollHeight);
+    }
+  }, [errors]);
 
   return (
     <>

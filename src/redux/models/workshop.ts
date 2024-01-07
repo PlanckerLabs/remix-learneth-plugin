@@ -4,6 +4,7 @@ import groupBy from 'lodash/groupBy';
 import pick from 'lodash/pick';
 import { type ModelType } from '../store';
 import remixClient from '../../remix-client';
+import { router } from '../../App';
 
 // const apiUrl = 'http://localhost:3001';
 const apiUrl = 'https://static.220.14.12.49.clients.your-server.de:3000';
@@ -143,6 +144,18 @@ const Model: ModelType = {
           screen: false,
         },
       });
+
+      if (payload.id) {
+        const { detail, selectedId } = workshopState;
+        const { ids, entities } = detail[selectedId];
+        for (let i = 0; i < ids.length; i++) {
+          const entity = entities[ids[i]];
+          if (entity.metadata.data.id === payload.id || i + 1 === payload.id) {
+            yield router.navigate(`/list?id=${ids[i]}`);
+            break;
+          }
+        }
+      }
     },
     *resetAll(_, { put }) {
       yield put({
