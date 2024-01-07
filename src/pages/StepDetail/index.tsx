@@ -34,10 +34,10 @@ function StepDetailPage() {
   }, [step]);
 
   useEffect(() => {
-    if (errors.length > 0) {
+    if (errors.length > 0 || success) {
       window.scrollTo(0, document.documentElement.scrollHeight);
     }
-  }, [errors]);
+  }, [errors, success]);
 
   return (
     <>
