@@ -34,6 +34,10 @@ const Model: ModelType = {
 
       yield remixClient.onload();
 
+      const theme = yield remixClient.call('theme', 'currentTheme');
+
+      yield put({ type: 'remixide/save', payload: { theme: theme.quality } });
+
       toast.dismiss();
 
       yield put({
