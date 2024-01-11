@@ -27,7 +27,7 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 ## Loading the plugin in remix
 
 When testing with localhost you should use the HTTP version of either REMIX or REMIX ALPHA. Click on the plugin manager icon and
-add the plugin 'Connect to a local plugin'. Your plugin when served with NG SERVE will be at http://localhost:3000/.
+add the plugin 'Connect to a local plugin'. Your plugin will be at http://localhost:3000/.
 
 ## Setting up the REMIX IDE for working with the plugin
 
